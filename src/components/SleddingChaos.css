@@ -334,3 +334,71 @@
     top: 55px;
   }
 }
+
+/* Touch controls for mobile */
+.touch-controls {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  z-index: 100000;
+  pointer-events: auto;
+}
+
+.touch-btn {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.touch-btn:active {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.touch-jump {
+  width: 80px;
+  height: 80px;
+  background: rgba(76, 175, 80, 0.3);
+  border-color: rgba(76, 175, 80, 0.5);
+}
+
+.touch-jump:active {
+  background: rgba(76, 175, 80, 0.5);
+}
+
+@media (max-width: 768px) {
+  .touch-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+  
+  .touch-jump {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .touch-controls {
+    gap: 15px;
+    bottom: 20px;
+  }
+}
+

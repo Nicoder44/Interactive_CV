@@ -9,8 +9,17 @@ const SleddingChaos = ({ onClose }) => {
   const backgroundRef = useRef(null);
   const [distance, setDistance] = useState(0);
   const [gameOver, setGameOver] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [restartTrigger, setRestartTrigger] = useState(0);
 
   useEffect(() => {
+    // Détecter si on est sur mobile
+    const checkMobile = () => {
+      setIsMobile('ontouchstart' in window || window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
     const { Engine, Render, World, Bodies, Body, Events, Runner } = Matter;
 
     const engine = Engine.create({
@@ -337,6 +346,16 @@ const SleddingChaos = ({ onClose }) => {
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     
+    // Gestionnaires tactiles pour mobile
+    const handleTouchButton = (key, isPressed) => {
+      if (key === 'left') keys.left = isPressed;
+      if (key === 'right') keys.right = isPressed;
+      if (key === 'up') keys.up = isPressed;
+    };
+    
+    // Exposer la fonction pour les boutons tactiles
+    window.sleddingTouchControl = handleTouchButton;
+    
     Events.on(engine, 'beforeUpdate', () => {
       const sleddingPos = sleddingGuy.position;
       
@@ -481,6 +500,7 @@ const SleddingChaos = ({ onClose }) => {
       cvRender.textures = {};
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      window.sleddingTouchControl = null;
 
       cvElements.forEach(el => el.style.opacity = '1');
       bodies.forEach((body) => {
@@ -489,7 +509,7 @@ const SleddingChaos = ({ onClose }) => {
         }
       });
     };
-  }, []);
+  }, [restartTrigger]);
 
   return (
     <div className="sledding-chaos-overlay">
@@ -509,16 +529,54 @@ const SleddingChaos = ({ onClose }) => {
       {!gameOver ? (
         <>
           <div className="chaos-instructions">
-            Use arrows ←→ or A/D to move, ↑ or Space to jump! 🛷
+            {isMobile ? 'Use buttons to move and jump! 🛷' : 'Use arrows ←→ or A/D to move, ↑ or Space to jump! 🛷'}
           </div>
           <div className="chaos-distance">Distance: {distance}m</div>
+          {isMobile && (
+            <div className="touch-controls">
+              <button 
+                className="touch-btn touch-left"
+                onTouchStart={() => window.sleddingTouchControl?.('left', true)}
+                onTouchEnd={() => window.sleddingTouchControl?.('left', false)}
+                onMouseDown={() => window.sleddingTouchControl?.('left', true)}
+                onMouseUp={() => window.sleddingTouchControl?.('left', false)}
+                onMouseLeave={() => window.sleddingTouchControl?.('left', false)}
+              >
+                ←
+              </button>
+              <button 
+                className="touch-btn touch-jump"
+                onTouchStart={() => window.sleddingTouchControl?.('up', true)}
+                onTouchEnd={() => window.sleddingTouchControl?.('up', false)}
+                onMouseDown={() => window.sleddingTouchControl?.('up', true)}
+                onMouseUp={() => window.sleddingTouchControl?.('up', false)}
+                onMouseLeave={() => window.sleddingTouchControl?.('up', false)}
+              >
+                ↑
+              </button>
+              <button 
+                className="touch-btn touch-right"
+                onTouchStart={() => window.sleddingTouchControl?.('right', true)}
+                onTouchEnd={() => window.sleddingTouchControl?.('right', false)}
+                onMouseDown={() => window.sleddingTouchControl?.('right', true)}
+                onMouseUp={() => window.sleddingTouchControl?.('right', false)}
+                onMouseLeave={() => window.sleddingTouchControl?.('right', false)}
+              >
+                →
+              </button>
+            </div>
+          )}
         </>
       ) : (
         <div className="game-over-screen">
           <h1>🛷 GAME OVER 🛷</h1>
           <p className="final-score">Final distance: {distance}m</p>
-          <button className="restart-btn" onClick={() => window.location.reload()}>Restart</button>
-          <button className="back-btn" onClick={onClose}>Back to CV</button>
+          <button className="restart-btn" onClick={() => {
+            setGameOver(false);
+            setDistance(0);
+            setRestartTrigger(prev => prev + 1);
+          }}>Restart</button>
+          <button className="back-btn" onClick={onClose}>Back to CV 😴</button>
         </div>
       )}
       <div ref={cvCanvasRef} className="cv-canvas-layer" />
