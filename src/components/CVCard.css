@@ -568,4 +568,33 @@
   .hobbies-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Ajuster les expériences pour mobile */
+  .experience-list {
+    gap: 4rem;
+  }
+
+  .experience-item-wrapper {
+    min-height: 420px;
+    margin-bottom: 1.5rem;
+  }
+
+  .experience-item {
+    min-height: 420px;
+  }
+
+  .experience-achievements {
+    font-size: 0.8rem;
+  }
+
+  .experience-achievements li {
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
+    padding-left: 1rem;
+  }
+
+  .experience-description {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
 }
