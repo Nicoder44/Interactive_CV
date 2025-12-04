@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Test coverage
+coverage
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,3 +25,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Video files (optional - uncomment if you don't want to commit large videos)
+# public/videos/*.mp4
+# public/videos/*.webm
+
+# Personal CV files (optional - uncomment to keep your CV private)
+# public/CV.tex
+# public/CV_*.pdf

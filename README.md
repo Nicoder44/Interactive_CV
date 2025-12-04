@@ -1,252 +1,286 @@
-# CV Web Interactif - maceparis.dev
+# Interactive CV - LaTeX to Web
 
-Un CV web moderne et interactif avec des effets visuels attrayants, développé en React.
+[![React](https://img.shields.io/badge/React-18.3-blue.svg)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF.svg)](https://vitejs.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**✨ NOUVEAU : Construit automatiquement depuis votre CV LaTeX !**
+A modern, interactive web CV automatically generated from your LaTeX resume. Transform your traditional CV into an engaging web experience with 3D flip cards, video overlays, and smooth animations.
 
-## ✨ Fonctionnalités
+## ✨ Features
 
-- **🔄 Parser LaTeX automatique** : Transforme votre CV.tex en site web interactif
-- **Carte brillante** avec effet holographique qui suit la souris
-- **Hobbies interactifs** : survolez pour voir des vidéos (pré-chargées pour zéro latence)
-- **Compétences animées** : barres de progression et démos visuelles au survol
-- **Expériences détaillées** : visualisations des réalisations au survol
-- **Design responsive** : s'adapte à tous les écrans
-- **Optimisé pour la performance** : construit avec Vite
+- **🔄 Automatic LaTeX Parsing**: Transforms your `.tex` CV into an interactive website
+- **🎴 3D Flip Cards**: Interactive experience and skill cards with smooth animations
+- **🎥 Dynamic Video Overlays**: Showcase hobbies with automatically detected video content
+- **📊 Skill Visualization**: Visual demonstrations and categorized skill display
+- **📱 Fully Responsive**: Optimized for desktop, tablet, and mobile devices
+- **⚡ Performance Optimized**: Built with Vite for lightning-fast load times
+- **🎨 Awesome-CV Design**: Professional styling inspired by the popular LaTeX template
 
-## 🚀 Installation
+## 🚀 Quick Start
 
 ```bash
-# Installer les dépendances
+# Install dependencies
 npm install
 
-# Lancer le serveur de développement
+# Start development server
 npm run dev
 
-# Compiler pour la production
+# Build for production
 npm run build
+
+# Deploy to GitHub Pages
+npm run deploy
 ```
 
-## 📝 Utilisation avec votre CV LaTeX
+## 📝 Usage
 
-### Option 1 : Parser automatique depuis LaTeX (RECOMMANDÉ)
+### Setting Up Your CV
 
-1. **Copiez votre CV.tex** dans le dossier `public/`
-2. **Activez le parser** dans `src/App.jsx` :
+1. **Place your LaTeX CV** in `public/CV.tex`
+2. **Configure the parser** in `src/App.jsx`:
    ```javascript
    const latexFile = '/CV.tex';
    ```
-3. **Enrichissez le contenu** dans `src/utils/cvEnrichment.js` :
-   - Ajoutez des vidéos aux hobbies
-   - Définissez les niveaux de compétences
-   - Ajoutez des achievements aux expériences
+3. **Enrich content** in `src/utils/cvEnrichment.js`:
+   - Add technology stacks to experiences
+   - Configure skill priorities and demos
+   - Map hobby names to categories
 
-👉 **[Voir le guide complet LaTeX](./GUIDE_LATEX.md)**
+### Adding Videos
 
-### Option 2 : Données manuelles
-
-Éditez directement `src/components/CVCard.jsx` et modifiez la fonction `getDefaultCVData()`.
-
-## 📁 Formats LaTeX supportés
-
-Compatible avec les classes LaTeX courantes :
-- `moderncv` (classic, casual, banking, etc.)
-- `article` standard
-- `europecv`
-- Formats personnalisés
-
-Commandes reconnues :
-- `\name`, `\title`, `\email`, `\phone`, `\address`
-- `\cventry` pour expériences et formation
-- `\cvitem`, `\cvcomputer` pour compétences
-- `\section` pour les sections
-- `\begin{itemize}...\end{itemize}` pour les listes
-
-## 🎨 Personnalisation
-
-### Ajouter vos vidéos
-
-Créez un dossier `public/videos/` et ajoutez vos vidéos :
+Place your video files in `public/videos/` with descriptive names:
 
 ```
 public/
   videos/
     climbing1.mp4
     climbing2.mp4
-    photo.mp4
+    skydiving.mp4
 ```
 
-Puis enrichissez dans `src/utils/cvEnrichment.js` :
+Videos are automatically detected based on filename matching (case-insensitive). For example:
+- Hobby named "Climbing" → matches `climbing*.mp4`, `Climbing*.mp4`, etc.
+- Hobby named "Travel" → matches `travel*.mp4`, `traveling*.mp4`, etc.
+
+## 📁 Supported LaTeX Formats
+
+Compatible with popular LaTeX CV classes:
+- `moderncv` (classic, casual, banking, oldstyle, fancy)
+- `awesome-cv`
+- `article` standard
+- `europecv`
+- Custom formats
+
+**Recognized commands:**
+- `\name{First}{Last}`, `\title{Title}`
+- `\email`, `\phone`, `\address`, `\homepage`, `\linkedin`, `\github`
+- `\cventry{date}{title}{company}{location}{}{description}`
+- `\cvitem{category}{items}`, `\cvcomputer{cat1}{items1}{cat2}{items2}`
+- `\section{Title}` for section headers
+- `\begin{itemize}...\end{itemize}` for achievement lists
+
+## 🌐 Deployment
+
+### GitHub Pages with Custom Domain
+
+## 🌐 Deployment
+
+### GitHub Pages with Custom Domain
+
+1. **Create a GitHub repository** and push your code:
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+2. **Install gh-pages**:
+   ```bash
+   npm install --save-dev gh-pages
+   ```
+
+3. **Deploy**:
+   ```bash
+   npm run deploy
+   ```
+   Your site will be available at: `https://YOUR-USERNAME.github.io/YOUR-REPO/`
+
+4. **Configure custom domain** (optional):
+   
+   Create `public/CNAME` with your domain:
+   ```
+   yourdomain.com
+   ```
+   
+   Configure DNS records with your provider:
+   ```
+   Type: A      Name: @    Value: 185.199.108.153
+   Type: A      Name: @    Value: 185.199.109.153
+   Type: A      Name: @    Value: 185.199.110.153
+   Type: A      Name: @    Value: 185.199.111.153
+   Type: CNAME  Name: www  Value: YOUR-USERNAME.github.io
+   ```
+   
+   In GitHub repository: **Settings** > **Pages** > **Custom domain** > Enter your domain > **Enforce HTTPS**
+
+### vite.config.js Configuration
+
+- **With custom domain**: `base: '/'` (default)
+- **Without custom domain**: `base: '/YOUR-REPO/'`
+
+## 📦 Project Structure
+
+```
+Interactive_CV/
+├── public/
+│   ├── videos/              # Video files for hobbies
+│   ├── CV.tex               # Your LaTeX CV source
+│   └── CNAME                # Custom domain (optional)
+├── src/
+│   ├── components/
+│   │   ├── CVCard.jsx       # Main CV component
+│   │   ├── CVCard.css
+│   │   ├── HobbyOverlay.jsx # Video overlay for hobbies
+│   │   ├── SkillDemo.jsx    # Skill demonstration cards
+│   │   └── ExperienceDemo.jsx # Experience detail cards
+│   ├── utils/
+│   │   ├── latexParser.js   # LaTeX parsing logic
+│   │   ├── cvEnrichment.js  # Content enrichment
+│   │   └── videoScanner.js  # Dynamic video detection
+│   ├── App.jsx
+│   └── main.jsx
+├── package.json
+├── vite.config.js
+└── README.md
+```
+
+## 🎨 Customization
+
+### Color Scheme
+
+Modify CSS variables in `src/components/CVCard.css`:
+
+```css
+:root {
+  --awesome-skyblue: #0395DE;
+  --headertext: #333333;
+  --sectiontext: #555555;
+}
+```
+
+### Skill Icons and Demos
+
+Add custom skill demonstrations in `src/components/SkillDemo.jsx`:
 
 ```javascript
-hobbies: {
-  'Escalade': {
-    videos: ['/videos/climbing1.mp4', '/videos/climbing2.mp4']
+const skillIcons = {
+  'YourSkill': {
+    icon: '🚀',
+    color: '#FF6B6B',
+    description: 'Your custom description'
+  }
+};
+```
+
+### Experience Technology Stacks
+
+Configure technology stacks in `src/utils/cvEnrichment.js`:
+
+```javascript
+experiences: {
+  'Your Job Title': {
+    achievements: ['Achievement 1', 'Achievement 2'],
+    technologies: ['Tech1', 'Tech2', 'Tech3']
   }
 }
 ```
 
-### Personnaliser les couleurs
+## 🧪 Testing
 
-Modifiez les fichiers CSS pour adapter les couleurs à votre charte :
-- `src/index.css` : fond de la page
-- `src/components/CVCard.css` : couleurs principales
-
-## 🌐 Déploiement sur GitHub Pages
-
-### 1. Créer un dépôt GitHub
+Run tests to ensure code quality:
 
 ```bash
-# Initialiser Git (si pas déjà fait)
-git init
-git add .
-git commit -m "Initial commit"
+# Run all tests
+npm test
 
-# Créer un dépôt sur GitHub puis :
-git remote add origin https://github.com/VOTRE-USERNAME/VOTRE-REPO.git
-git branch -M main
-git push -u origin main
+# Run tests in watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
 ```
 
-### 2. Installer gh-pages
+## 🔧 Technology Stack
 
-```bash
-npm install --save-dev gh-pages
-```
+- **React 18.3** - UI library with hooks
+- **Vite 5.4** - Build tool and dev server
+- **CSS3** - Native animations and transitions
+- **Vitest** - Unit testing framework
+- **GitHub Pages** - Static site hosting
 
-### 3. Déployer
+## 🏗️ Architecture
 
-```bash
-npm run deploy
-```
+### Parser System
+- **latexParser.js**: Extracts structured data from LaTeX commands
+- **Balanced brace extraction**: Handles nested LaTeX structures
+- **Multiple format support**: Adapts to different CV templates
 
-Votre site sera disponible sur : `https://VOTRE-USERNAME.github.io/VOTRE-REPO/`
+### Video System
+- **Automatic detection**: Scans `public/videos/` using Vite's `import.meta.glob`
+- **Smart filtering**: Case-insensitive keyword matching
+- **Random selection**: New video on each hover
 
-### 4. Configurer votre domaine Infomaniak
+### Component Architecture
+- **CVCard**: Container with section rendering
+- **Flip cards**: CSS 3D transforms for interactive experiences/skills
+- **Lazy video loading**: Videos load only on hover
+- **Responsive design**: Mobile-first approach with breakpoints
 
-Dans votre espace Infomaniak :
+## 💡 Best Practices
 
-1. Allez dans **Gestion DNS** de votre domaine `maceparis.dev`
-2. Ajoutez ces enregistrements DNS :
+### Video Optimization
+- Keep videos under 10 seconds
+- Use compressed formats (H.264 MP4)
+- Target file size: < 5MB per video
+- Resolution: 720p is sufficient for web
 
-```
-Type: A
-Nom: @
-Valeur: 185.199.108.153
-```
+### Performance
+- LaTeX parsing happens once on mount
+- Videos are loaded on-demand
+- CSS animations use hardware acceleration
+- Build output is optimized with Vite
 
-```
-Type: A
-Nom: @
-Valeur: 185.199.109.153
-```
+### Accessibility
+- Semantic HTML structure
+- ARIA labels where appropriate
+- Keyboard navigation support
+- Responsive font sizes
 
-```
-Type: A
-Nom: @
-Valeur: 185.199.110.153
-```
+## 🤝 Contributing
 
-```
-Type: A
-Nom: @
-Valeur: 185.199.111.153
-```
+Contributions are welcome! Please feel free to submit issues and pull requests.
 
-```
-Type: CNAME
-Nom: www
-Valeur: VOTRE-USERNAME.github.io
-```
+### Development Workflow
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/AmazingFeature`
+3. Make your changes
+4. Run tests: `npm test`
+5. Commit: `git commit -m 'Add AmazingFeature'`
+6. Push: `git push origin feature/AmazingFeature`
+7. Open a Pull Request
 
-3. Dans votre dépôt GitHub, allez dans **Settings** > **Pages**
-4. Dans **Custom domain**, entrez `maceparis.dev`
-5. Cochez **Enforce HTTPS**
+## 📄 License
 
-6. Créez un fichier `public/CNAME` avec :
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-```
-maceparis.dev
-```
+## 🙏 Acknowledgments
 
-### 5. Mettre à jour vite.config.js
-
-Si vous utilisez un domaine personnalisé, pas besoin de changer `base`.
-Si vous utilisez l'URL GitHub Pages sans domaine, modifiez :
-
-```javascript
-export default defineConfig({
-  plugins: [react()],
-  base: '/VOTRE-REPO/',
-})
-```
-
-## 📦 Structure du projet
-
-```
-Web_CV/
-├── public/
-│   └── videos/          # Vos vidéos ici
-├── src/
-│   ├── components/
-│   │   ├── CVCard.jsx           # Composant principal
-│   │   ├── CVCard.css
-│   │   ├── HobbyOverlay.jsx     # Overlay vidéos hobbies
-│   │   ├── HobbyOverlay.css
-│   │   ├── SkillDemo.jsx        # Démos compétences
-│   │   ├── SkillDemo.css
-│   │   ├── ExperienceDemo.jsx   # Visualisation expériences
-│   │   └── ExperienceDemo.css
-│   ├── App.jsx
-│   ├── App.css
-│   ├── main.jsx
-│   └── index.css
-├── index.html
-├── package.json
-└── vite.config.js
-```
-
-## 🎨 Personnalisation avancée
-
-### Ajouter des démos pour d'autres compétences
-
-Éditez `src/components/SkillDemo.jsx` et ajoutez un nouveau case dans `getDemoContent()` :
-
-```javascript
-case 'votre-competence':
-  return (
-    <div className="demo-custom">
-      <div className="custom-animation">🚀</div>
-      <div className="code-snippet">
-        <code>{`votre code exemple`}</code>
-      </div>
-    </div>
-  );
-```
-
-### Modifier les animations
-
-Les animations sont définies dans les fichiers CSS avec `@keyframes`.
-Vous pouvez ajuster les durées, effets, etc.
-
-## 💡 Conseils
-
-- **Optimisez vos vidéos** : utilisez des formats compressés (WebM, MP4 optimisé)
-- **Taille des vidéos** : gardez-les courtes (5-10 secondes) et légères
-- **Images** : vous pouvez aussi remplacer les vidéos par des GIFs ou images
-- **Performance** : testez sur mobile pour vérifier la fluidité
-
-## 🔧 Technologies utilisées
-
-- React 18
-- Vite 5
-- CSS3 (animations natives)
-- GitHub Pages
-
-## 📄 Licence
-
-Libre d'utilisation et de modification pour votre usage personnel.
+- Design inspired by [Awesome-CV](https://github.com/posquit0/Awesome-CV) LaTeX template
+- Built with modern web technologies
 
 ---
 
-Créé avec ❤️ pour maceparis.dev
+**Made with ❤️ and React**

@@ -1,21 +1,31 @@
 {
-  "name": "web-cv",
+  "name": "interactive-cv",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "Interactive web CV automatically generated from LaTeX resume",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "vite build && gh-pages -d dist"
+    "deploy": "vite build && gh-pages -d dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/ui": "^4.0.15",
+    "gh-pages": "^6.1.1",
+    "jsdom": "^27.2.0",
     "vite": "^5.4.11",
-    "gh-pages": "^6.1.1"
+    "vitest": "^4.0.15"
   }
 }

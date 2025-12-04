@@ -1,34 +1,59 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './HobbyOverlay.css';
-import { selectRandomVideo, filterVideosByHobby } from '../utils/videoScanner';
+import { selectRandomVideo } from '../utils/videoScanner';
 
 const HobbyOverlay = ({ videos, hobbyName, onMouseEnter, onMouseLeave }) => {
   const videoRef = useRef(null);
+  const recentlyPlayedRef = useRef([]);
   
-  // Sélectionner une vidéo aléatoire à chaque render (= nouveau survol)
-  const selectedVideo = selectRandomVideo(videos);
+  // État pour forcer le changement de vidéo
+  const [currentVideo, setCurrentVideo] = useState(() => 
+    selectRandomVideo(videos, recentlyPlayedRef.current)
+  );
+
+  // Fonction pour passer à la vidéo suivante
+  const playNextVideo = () => {
+    const nextVideo = selectRandomVideo(videos, recentlyPlayedRef.current);
+    
+    if (nextVideo) {
+      // Ajouter la vidéo actuelle à l'historique
+      if (currentVideo) {
+        recentlyPlayedRef.current = [currentVideo, ...recentlyPlayedRef.current].slice(0, 4);
+      }
+      
+      setCurrentVideo(nextVideo);
+    }
+  };
 
   useEffect(() => {
-    if (videoRef.current && selectedVideo) {
-      const playPromise = videoRef.current.play();
+    const video = videoRef.current;
+    
+    if (video && currentVideo) {
+      const playPromise = video.play();
       
       if (playPromise !== undefined) {
         playPromise.catch(() => {
           // Ignorer silencieusement les erreurs de lecture
         });
       }
-    }
 
-    return () => {
-      if (videoRef.current) {
-        videoRef.current.pause();
-        videoRef.current.currentTime = 0;
-      }
-    };
-  }, [selectedVideo]);
+      // Quand la vidéo se termine, passer à la suivante
+      const handleVideoEnd = () => {
+        playNextVideo();
+      };
+
+      video.addEventListener('ended', handleVideoEnd);
+
+      return () => {
+        video.removeEventListener('ended', handleVideoEnd);
+        video.pause();
+        video.currentTime = 0;
+      };
+    }
+  }, [currentVideo]);
 
   // Ne rien rendre si aucune vidéo disponible
-  if (!selectedVideo) {
+  if (!currentVideo) {
     return null;
   }
 
@@ -42,8 +67,7 @@ const HobbyOverlay = ({ videos, hobbyName, onMouseEnter, onMouseLeave }) => {
         <video
           ref={videoRef}
           className="hobby-video"
-          src={selectedVideo}
-          loop
+          src={currentVideo}
           muted
           playsInline
           preload="metadata"

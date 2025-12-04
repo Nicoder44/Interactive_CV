@@ -497,12 +497,14 @@
   transition: all 0.3s ease;
   border: 1px solid #e0e0e0;
   overflow: visible;
+  z-index: 1;
 }
 
 .hobby-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(3, 149, 222, 0.15);
   border-color: var(--awesome-skyblue);
+  z-index: 2;
 }
 
 .hobby-icon {
