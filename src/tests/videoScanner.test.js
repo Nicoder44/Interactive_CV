@@ -72,13 +72,25 @@ describe('videoScanner', () => {
         '/videos/video3.mp4',
         '/videos/video4.mp4',
         '/videos/video5.mp4',
+        '/videos/video6.mp4',
+        '/videos/video7.mp4',
+        '/videos/video8.mp4',
+        '/videos/video9.mp4',
+        '/videos/video10.mp4',
+        '/videos/video11.mp4',
+        '/videos/video12.mp4',
       ];
       
-      const recentlyPlayed = ['/videos/video1.mp4', '/videos/video2.mp4'];
-      const result = selectRandomVideo(videos, recentlyPlayed);
+      const recentlyPlayed = [
+        '/videos/video1.mp4', 
+        '/videos/video2.mp4',
+        '/videos/video3.mp4'
+      ];
+      const result = selectRandomVideo(videos, recentlyPlayed, 10);
       
       expect(result).not.toBe('/videos/video1.mp4');
       expect(result).not.toBe('/videos/video2.mp4');
+      expect(result).not.toBe('/videos/video3.mp4');
       expect(videos).toContain(result);
     });
 

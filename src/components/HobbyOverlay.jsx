@@ -2,25 +2,24 @@ import React, { useEffect, useRef, useState } from 'react';
 import './HobbyOverlay.css';
 import { selectRandomVideo } from '../utils/videoScanner';
 
-const HobbyOverlay = ({ videos, hobbyName, onMouseEnter, onMouseLeave }) => {
+const HobbyOverlay = ({ videos, hobbyName, videoHistoryRef, onMouseEnter, onMouseLeave }) => {
   const videoRef = useRef(null);
-  const recentlyPlayedRef = useRef([]);
   
   // État pour forcer le changement de vidéo
   const [currentVideo, setCurrentVideo] = useState(() => 
-    selectRandomVideo(videos, recentlyPlayedRef.current)
+    selectRandomVideo(videos, videoHistoryRef.current, 10)
   );
 
   // Fonction pour passer à la vidéo suivante
   const playNextVideo = () => {
-    const nextVideo = selectRandomVideo(videos, recentlyPlayedRef.current);
+    // Ajouter la vidéo actuelle à l'historique AVANT de choisir la suivante
+    if (currentVideo && !videoHistoryRef.current.includes(currentVideo)) {
+      videoHistoryRef.current = [currentVideo, ...videoHistoryRef.current].slice(0, 10);
+    }
+    
+    const nextVideo = selectRandomVideo(videos, videoHistoryRef.current, 10);
     
     if (nextVideo) {
-      // Ajouter la vidéo actuelle à l'historique
-      if (currentVideo) {
-        recentlyPlayedRef.current = [currentVideo, ...recentlyPlayedRef.current].slice(0, 10);
-      }
-      
       setCurrentVideo(nextVideo);
     }
   };
@@ -29,6 +28,11 @@ const HobbyOverlay = ({ videos, hobbyName, onMouseEnter, onMouseLeave }) => {
     const video = videoRef.current;
     
     if (video && currentVideo) {
+      // Ajouter la vidéo courante à l'historique dès qu'elle commence
+      if (!videoHistoryRef.current.includes(currentVideo)) {
+        videoHistoryRef.current = [currentVideo, ...videoHistoryRef.current].slice(0, 10);
+      }
+      
       const playPromise = video.play();
       
       if (playPromise !== undefined) {

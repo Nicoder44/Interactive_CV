@@ -13,6 +13,9 @@ const CVCard = ({ latexFile = null, manualData = null }) => {
   const [loading, setLoading] = useState(false);
   const cardRef = useRef(null);
   const hoverTimeoutRef = useRef(null);
+  
+  // Historique des vidéos jouées pour éviter les répétitions (persiste entre les survols)
+  const videoHistoryRef = useRef([]);
 
   // Charger et parser le CV LaTeX au montage
   useEffect(() => {
@@ -248,6 +251,7 @@ const CVCard = ({ latexFile = null, manualData = null }) => {
                     <HobbyOverlay 
                       videos={hobby.videos || []} 
                       hobbyName={hobby.name}
+                      videoHistoryRef={videoHistoryRef}
                       onMouseEnter={() => {
                         if (hoverTimeoutRef.current) {
                           clearTimeout(hoverTimeoutRef.current);
