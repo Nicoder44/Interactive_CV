@@ -3,6 +3,7 @@ import './CVCard.css';
 import HobbyOverlay from './HobbyOverlay';
 import SkillDemo from './SkillDemo';
 import ExperienceDemo from './ExperienceDemo';
+import SleddingChaos from './SleddingChaos';
 import { parseLatexCV } from '../utils/latexParser';
 import { enrichCVData } from '../utils/cvEnrichment';
 
@@ -11,6 +12,7 @@ const CVCard = ({ latexFile = null, manualData = null }) => {
   const [hoveredSection, setHoveredSection] = useState(null);
   const [cvData, setCvData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [chaosMode, setChaosMode] = useState(false);
   const cardRef = useRef(null);
   const hoverTimeoutRef = useRef(null);
   
@@ -85,6 +87,8 @@ const CVCard = ({ latexFile = null, manualData = null }) => {
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setMousePosition({ x: 0, y: 0 })}
     >
+      {chaosMode && <SleddingChaos onClose={() => setChaosMode(false)} />}
+      
       <div className="cv-card">
         
         {/* Header */}
@@ -95,6 +99,13 @@ const CVCard = ({ latexFile = null, manualData = null }) => {
                 <span className="cv-name-first">{cvData.name.split(' ')[0]}</span>
                 {' '}
                 <span className="cv-name-last">{cvData.name.split(' ').slice(1).join(' ')}</span>
+                <button 
+                  className="sledding-trigger"
+                  onClick={() => setChaosMode(true)}
+                  title="🛷 Launch the chaos!"
+                >
+                  🛷
+                </button>
               </>
             ) : (
               cvData.name

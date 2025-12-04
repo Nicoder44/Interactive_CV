@@ -1,0 +1,260 @@
+.sledding-chaos-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
+  animation: skyAppear 0.5s ease;
+}
+
+@keyframes skyAppear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sledding-chaos-overlay canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.cv-canvas-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
+.game-canvas-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.game-canvas-layer canvas {
+  pointer-events: none;
+}
+
+.clones-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.close-chaos-btn,
+.close-chaos {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100000;
+  padding: 12px 24px;
+  background: rgba(255, 59, 48, 0.95);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.close-chaos-btn:hover,
+.close-chaos:hover {
+  background: rgba(255, 59, 48, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.close-chaos-btn:active,
+.close-chaos:active {
+  transform: translateY(0);
+}
+
+.chaos-instructions {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100000;
+  padding: 12px 24px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.chaos-distance {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100000;
+  padding: 10px 20px;
+  background: rgba(52, 152, 219, 0.9);
+  color: white;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes floatInstructions {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+
+.chaos-element {
+  z-index: 100;
+  transition: none;
+  opacity: 1 !important;
+  visibility: visible !important;
+  position: absolute !important;
+}
+
+.game-over-screen {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100001;
+  background: rgba(0, 0, 0, 0.95);
+  padding: 60px 80px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  animation: gameOverAppear 0.5s ease;
+}
+
+@keyframes gameOverAppear {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.game-over-screen h1 {
+  font-size: 3rem;
+  color: #E74C3C;
+  margin: 0 0 20px 0;
+  text-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+}
+
+.final-score {
+  font-size: 2rem;
+  color: white;
+  margin: 20px 0 40px 0;
+  font-weight: bold;
+}
+
+.restart-btn,
+.back-btn {
+  padding: 15px 30px;
+  margin: 10px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.restart-btn {
+  background: #3498DB;
+  color: white;
+}
+
+.restart-btn:hover {
+  background: #2980B9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.back-btn {
+  background: #95A5A6;
+  color: white;
+}
+
+.back-btn:hover {
+  background: #7F8C8D;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
+}
+
+/* Effet de neige/particules */
+.sledding-chaos-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, white, transparent),
+    radial-gradient(2px 2px at 60px 70px, white, transparent),
+    radial-gradient(1px 1px at 50px 50px, white, transparent),
+    radial-gradient(1px 1px at 130px 80px, white, transparent),
+    radial-gradient(2px 2px at 90px 10px, white, transparent);
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: snow 10s linear infinite;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+@keyframes snow {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 200px;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .close-chaos-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    top: 10px;
+    right: 10px;
+  }
+
+  .chaos-instructions {
+    font-size: 0.85rem;
+    padding: 10px 16px;
+    top: 10px;
+  }
+
+  .chaos-distance {
+    font-size: 1rem;
+    padding: 8px 16px;
+    top: 55px;
+  }
+}
