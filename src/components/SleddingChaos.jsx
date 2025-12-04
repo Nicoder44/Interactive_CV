@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
+import Leaderboard from './Leaderboard';
 import './SleddingChaos.css';
 
 const SleddingChaos = ({ onClose }) => {
@@ -11,6 +12,7 @@ const SleddingChaos = ({ onClose }) => {
   const [gameOver, setGameOver] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [restartTrigger, setRestartTrigger] = useState(0);
+  const finalScoreRef = useRef(0); // Sceller le score final pour éviter la triche
 
   useEffect(() => {
     // Détecter si on est sur mobile
@@ -356,17 +358,32 @@ const SleddingChaos = ({ onClose }) => {
     // Exposer la fonction pour les boutons tactiles
     window.sleddingTouchControl = handleTouchButton;
     
+    // Variable pour suivre si on peut sauter
+    let canJump = false;
+    let jumpCooldown = false;
+    
     Events.on(engine, 'beforeUpdate', () => {
       const sleddingPos = sleddingGuy.position;
       
-      // Vérifier si au sol
+      // Vérifier si au sol avec une détection plus stricte
       const isGrounded = engine.world.bodies.some(body => {
         if (body === sleddingGuy || !body.isStatic) return false;
         const below = body.position.y > sleddingPos.y;
-        const close = Math.abs(body.position.y - sleddingPos.y) < 50;
-        const aligned = Math.abs(body.position.x - sleddingPos.x) < 100;
-        return below && close && aligned;
+        const close = Math.abs(body.position.y - sleddingPos.y) < 40;
+        const aligned = Math.abs(body.position.x - sleddingPos.x) < 80;
+        // Vérifier aussi que la vitesse verticale est faible (vraiment posé)
+        const notFalling = sleddingGuy.velocity.y > -2 && sleddingGuy.velocity.y < 5;
+        return below && close && aligned && notFalling;
       });
+      
+      // Activer le saut seulement si on est au sol
+      if (isGrounded) {
+        canJump = true;
+        jumpCooldown = false;
+      } else if (sleddingGuy.velocity.y > 2) {
+        // Si on tombe, désactiver le saut
+        canJump = false;
+      }
       
       // Contrôles horizontaux avec plus de force en l'air
       const airControl = isGrounded ? 0.004 : 0.008;
@@ -390,9 +407,11 @@ const SleddingChaos = ({ onClose }) => {
         Body.setAngularVelocity(sleddingGuy, sleddingGuy.angularVelocity * 0.9);
       }
       
-      // Saut
-      if (keys.up && (isGrounded || Math.abs(sleddingGuy.velocity.y) < 1)) {
+      // Saut - seulement si au sol et pas en cooldown
+      if (keys.up && canJump && !jumpCooldown) {
         Body.setVelocity(sleddingGuy, { x: sleddingGuy.velocity.x, y: -15 });
+        canJump = false;
+        jumpCooldown = true;
       }
       
       // Générer de nouvelles plateformes au fur et à mesure
@@ -432,9 +451,17 @@ const SleddingChaos = ({ onClose }) => {
       
       // Game over si le bonhomme est 800px sous la plateforme la plus basse
       if (sleddingPos.y > lowestPlatform + 800) {
+        const finalScore = Math.floor(sleddingPos.x / 10);
+        finalScoreRef.current = finalScore;
+        setDistance(finalScore); // Fixer la distance affichée
         setGameOver(true);
         Runner.stop(runner);
         return;
+      }
+      
+      // Mettre à jour la distance seulement si le jeu n'est pas terminé
+      if (!gameOver) {
+        setDistance(Math.max(0, Math.floor(sleddingPos.x / 10)));
       }
       
       // Caméra suit le bonhomme horizontalement ET verticalement
@@ -460,9 +487,6 @@ const SleddingChaos = ({ onClose }) => {
         layer.style.transform = `translateX(${-smoothX * speed}px)`;
       });
       
-      // Mettre à jour la distance
-      setDistance(Math.max(0, Math.floor(sleddingPos.x / 10)));
-      
       // Synchroniser les clones DOM avec la physique
       bodies.forEach((body) => {
         const domElement = body.plugin.domElement;
@@ -485,6 +509,13 @@ const SleddingChaos = ({ onClose }) => {
     Render.run(cvRender);
     Render.run(gameRender);
     
+    // Réinitialiser la caméra au début
+    const initialBounds = {
+      min: { x: 0, y: 0 },
+      max: { x: window.innerWidth, y: window.innerHeight }
+    };
+    Render.lookAt(gameRender, initialBounds);
+    Render.lookAt(cvRender, initialBounds);
 
 
     // Cleanup
@@ -568,16 +599,16 @@ const SleddingChaos = ({ onClose }) => {
           )}
         </>
       ) : (
-        <div className="game-over-screen">
-          <h1>🛷 GAME OVER 🛷</h1>
-          <p className="final-score">Final distance: {distance}m</p>
-          <button className="restart-btn" onClick={() => {
+        <Leaderboard 
+          currentScore={finalScoreRef.current || distance}
+          onClose={onClose}
+          onRestart={() => {
             setGameOver(false);
             setDistance(0);
+            finalScoreRef.current = 0;
             setRestartTrigger(prev => prev + 1);
-          }}>Restart</button>
-          <button className="back-btn" onClick={onClose}>Back to CV 😴</button>
-        </div>
+          }}
+        />
       )}
       <div ref={cvCanvasRef} className="cv-canvas-layer" />
       <div ref={gameCanvasRef} className="game-canvas-layer" />

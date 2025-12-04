@@ -118,7 +118,6 @@ const CVCard = ({ latexFile = null, manualData = null }) => {
           </a>
           <div className="cv-contact">
             {cvData.contact.email && <span>✉ {cvData.contact.email}</span>}
-            {cvData.contact.phone && <span>📱 {cvData.contact.phone}</span>}
             {cvData.contact.location && <span>📍 {cvData.contact.location}</span>}
             {cvData.contact.linkedin && <span>💼 LinkedIn: {cvData.contact.linkedin}</span>}
             {cvData.contact.github && <span>💻 GitHub: {cvData.contact.github}</span>}
