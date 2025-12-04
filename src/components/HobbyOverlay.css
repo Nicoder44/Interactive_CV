@@ -3,10 +3,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 300px;
+  width: 280px;
   max-width: 90vw;
   z-index: 1000;
-  pointer-events: none;
+  pointer-events: auto;
   opacity: 0;
   animation: fadeInCenter 0.3s ease forwards;
 }
@@ -19,16 +19,16 @@
   box-shadow: 
     0 20px 60px rgba(0, 0, 0, 0.5),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-  display: grid;
-  gap: 0.75rem;
 }
 
 .hobby-video {
   width: 100%;
-  height: auto;
+  height: 420px;
   border-radius: 8px;
   display: block;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  object-fit: cover;
+  background: #000;
 }
 
 .hobby-placeholder {
@@ -49,12 +49,13 @@
   }
 }
 
-/* Si plusieurs vidéos, créer une grille */
-.hobby-overlay-content:has(> .hobby-video:nth-child(2)) {
-  grid-template-columns: 1fr 1fr;
-}
-
-.hobby-overlay-content:has(> .hobby-video:nth-child(2)) .hobby-video {
-  max-height: 150px;
-  object-fit: cover;
+/* Responsive pour mobile */
+@media (max-width: 768px) {
+  .hobby-overlay {
+    width: 240px;
+  }
+  
+  .hobby-video {
+    height: 360px;
+  }
 }

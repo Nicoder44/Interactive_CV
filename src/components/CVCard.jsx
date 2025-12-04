@@ -12,6 +12,7 @@ const CVCard = ({ latexFile = null, manualData = null }) => {
   const [cvData, setCvData] = useState(null);
   const [loading, setLoading] = useState(false);
   const cardRef = useRef(null);
+  const hoverTimeoutRef = useRef(null);
 
   // Charger et parser le CV LaTeX au montage
   useEffect(() => {
@@ -226,8 +227,17 @@ const CVCard = ({ latexFile = null, manualData = null }) => {
                 <div
                   key={index}
                   className="hobby-item"
-                  onMouseEnter={() => setHoveredSection({ type: 'hobby', data: hobby })}
-                  onMouseLeave={() => setHoveredSection(null)}
+                  onMouseEnter={() => {
+                    if (hoverTimeoutRef.current) {
+                      clearTimeout(hoverTimeoutRef.current);
+                    }
+                    setHoveredSection({ type: 'hobby', data: hobby });
+                  }}
+                  onMouseLeave={() => {
+                    hoverTimeoutRef.current = setTimeout(() => {
+                      setHoveredSection(null);
+                    }, 300);
+                  }}
                 >
                   <span className="hobby-icon">{hobby.icon}</span>
                   <div style={{flex: 1}}>
@@ -235,7 +245,20 @@ const CVCard = ({ latexFile = null, manualData = null }) => {
                     {hobby.period && <span className="hobby-period"> · {hobby.period}</span>}
                   </div>
                   {hoveredSection?.type === 'hobby' && hoveredSection.data.name === hobby.name && (
-                    <HobbyOverlay videos={hobby.videos || []} hobbyName={hobby.name} />
+                    <HobbyOverlay 
+                      videos={hobby.videos || []} 
+                      hobbyName={hobby.name}
+                      onMouseEnter={() => {
+                        if (hoverTimeoutRef.current) {
+                          clearTimeout(hoverTimeoutRef.current);
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        hoverTimeoutRef.current = setTimeout(() => {
+                          setHoveredSection(null);
+                        }, 300);
+                      }}
+                    />
                   )}
                 </div>
               ))}

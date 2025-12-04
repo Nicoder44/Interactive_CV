@@ -6,32 +6,9 @@
  * extraits de votre CV LaTeX sans modifier le fichier .tex
  */
 
+import { getAllVideos, filterVideosByHobby } from './videoScanner';
+
 export const cvEnrichment = {
-  // Ajouter des vidéos aux hobbies
-  hobbies: {
-    'Climbing': {
-      videos: [
-        '/videos/Climbing.mp4'
-      ]
-    },
-    'Escalade': {
-      videos: [
-        '/videos/Climbing.mp4'
-      ]
-    },
-    'Skydiving': {
-      videos: ['/videos/Skydiving.mp4']
-    },
-    'Parachutisme': {
-      videos: ['/videos/Skydiving.mp4']
-    },
-    'Traveling': {
-      videos: ['/videos/Traveling.mp4']
-    },
-    'Voyage': {
-      videos: ['/videos/Traveling.mp4']
-    }
-  },
 
   // Ajouter des niveaux aux compétences (0-100)
   skills: {
@@ -151,14 +128,19 @@ export const cvEnrichment = {
 export function enrichCVData(parsedData) {
   const enriched = { ...parsedData };
 
-  // Enrichir les hobbies
+  // Charger toutes les vidéos disponibles dynamiquement
+  const allVideos = getAllVideos();
+
+  // Enrichir les hobbies avec les vidéos correspondantes
   if (enriched.hobbies) {
     enriched.hobbies = enriched.hobbies.map(hobby => {
-      const enrichment = cvEnrichment.hobbies[hobby.name];
-      if (enrichment) {
-        return { ...hobby, ...enrichment };
-      }
-      return hobby;
+      // Filtrer automatiquement les vidéos par nom de hobby
+      const matchingVideos = filterVideosByHobby(allVideos, hobby.name);
+      
+      return {
+        ...hobby,
+        videos: matchingVideos
+      };
     });
   }
 
