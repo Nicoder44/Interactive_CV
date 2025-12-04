@@ -18,7 +18,7 @@ const HobbyOverlay = ({ videos, hobbyName, onMouseEnter, onMouseLeave }) => {
     if (nextVideo) {
       // Ajouter la vidéo actuelle à l'historique
       if (currentVideo) {
-        recentlyPlayedRef.current = [currentVideo, ...recentlyPlayedRef.current].slice(0, 4);
+        recentlyPlayedRef.current = [currentVideo, ...recentlyPlayedRef.current].slice(0, 10);
       }
       
       setCurrentVideo(nextVideo);
