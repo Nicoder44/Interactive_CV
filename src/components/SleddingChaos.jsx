@@ -6,6 +6,7 @@ const SleddingChaos = ({ onClose }) => {
   const gameCanvasRef = useRef(null);
   const cvCanvasRef = useRef(null);
   const clonesContainerRef = useRef(null);
+  const backgroundRef = useRef(null);
   const [distance, setDistance] = useState(0);
   const [gameOver, setGameOver] = useState(false);
 
@@ -13,7 +14,7 @@ const SleddingChaos = ({ onClose }) => {
     const { Engine, Render, World, Bodies, Body, Events, Runner } = Matter;
 
     const engine = Engine.create({
-      gravity: { x: 0, y: 1.2 }
+      gravity: { x: 0, y: 1.5 }
     });
 
     // Render pour le gameplay (bonhomme + plateformes) - au premier plan
@@ -37,7 +38,7 @@ const SleddingChaos = ({ onClose }) => {
         width: window.innerWidth,
         height: window.innerHeight,
         wireframes: false,
-        background: 'linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%)',
+        background: 'transparent',
         hasBounds: true
       }
     });
@@ -49,10 +50,10 @@ const SleddingChaos = ({ onClose }) => {
     const startY = buttonRect ? buttonRect.top + buttonRect.height / 2 : 100;
     
     const sleddingGuy = Bodies.rectangle(startX, startY, 50, 35, {
-      restitution: 0.3,
-      friction: 0.05,
-      frictionAir: 0.01,
-      density: 0.003,
+      restitution: 0.5,
+      friction: 0.001,
+      frictionAir: 0.005,
+      density: 0.004,
       collisionFilter: {
         category: 0x0001,
         mask: 0x0001
@@ -88,17 +89,20 @@ const SleddingChaos = ({ onClose }) => {
         
         for (let i = 0; i < count; i++) {
           const platformType = Math.random();
-          let width, height, angle, x, y, color;
+          let width, height, angle, x, y, color, friction, restitution, platformKind;
           
-          if (platformType < 0.5) {
-            // Plateforme horizontale
+          if (platformType < 0.35) {
+            // Plateforme horizontale normale
             width = 150 + Math.random() * 200;
             height = 20;
             angle = 0;
             x = currentX + width / 2 + 100 + Math.random() * 150;
             y = currentY + (Math.random() - 0.5) * 100;
             color = '#34495E';
-          } else if (platformType < 0.75) {
+            friction = 0.3;
+            restitution = 0.4;
+            platformKind = 'normal';
+          } else if (platformType < 0.55) {
             // Pente descendante (tremplin)
             width = 180;
             height = 20;
@@ -106,7 +110,10 @@ const SleddingChaos = ({ onClose }) => {
             x = currentX + width / 2 + 120 + Math.random() * 100;
             y = currentY + Math.random() * 80;
             color = '#E74C3C';
-          } else {
+            friction = 0.3;
+            restitution = 0.7;
+            platformKind = 'ramp';
+          } else if (platformType < 0.7) {
             // Pente montante
             width = 150;
             height = 20;
@@ -114,18 +121,46 @@ const SleddingChaos = ({ onClose }) => {
             x = currentX + width / 2 + 100 + Math.random() * 120;
             y = currentY + 50 + Math.random() * 50;
             color = '#3498DB';
+            friction = 0.3;
+            restitution = 0.4;
+            platformKind = 'upward';
+          } else if (platformType < 0.85) {
+            // Plateforme givrée (très glissante)
+            width = 150 + Math.random() * 150;
+            height = 20;
+            angle = Math.random() > 0.5 ? -0.15 : 0.15;
+            x = currentX + width / 2 + 100 + Math.random() * 120;
+            y = currentY + (Math.random() - 0.5) * 100;
+            color = '#D5F4FF';
+            friction = 0;
+            restitution = 0.4;
+            platformKind = 'icy';
+          } else {
+            // Plateforme rebondissante
+            width = 120 + Math.random() * 80;
+            height = 25;
+            angle = 0;
+            x = currentX + width / 2 + 100 + Math.random() * 120;
+            y = currentY + (Math.random() - 0.5) * 120;
+            color = '#9B59B6';
+            friction = 0.4;
+            restitution = 1.5;
+            platformKind = 'bouncy';
           }
           
           const platform = Bodies.rectangle(x, y, width, height, {
             isStatic: true,
             angle: angle,
-            friction: 0.8,
-            restitution: platformType < 0.75 ? 0.4 : 0.1,
+            friction: friction,
+            restitution: restitution,
             collisionFilter: {
               category: 0x0001,
               mask: 0x0001 | 0x0002
             },
-            render: { fillStyle: color }
+            render: { fillStyle: color },
+            plugin: {
+              platformKind: platformKind
+            }
           });
           
           newPlatforms.push(platform);
@@ -221,6 +256,72 @@ const SleddingChaos = ({ onClose }) => {
     // Contrôles clavier
     const keys = { left: false, right: false, up: false };
     
+    // Palette de couleurs dynamiques
+    const colorPalettes = [
+      ['#FF6B6B', '#FFE66D'],
+      ['#4ECDC4', '#44A7C4'],
+      ['#A8E6CF', '#DCEDC1'],
+      ['#FFD93D', '#6BCF7F'],
+      ['#FF8ED4', '#C779D0'],
+      ['#4FACFE', '#00F2FE'],
+      ['#FA709A', '#FEE140'],
+      ['#30CFD0', '#330867'],
+      ['#A8EDEA', '#FED6E3'],
+      ['#FF9A9E', '#FAD0C4']
+    ];
+    
+    // Écouter les collisions
+    Events.on(engine, 'collisionStart', (event) => {
+      event.pairs.forEach((pair) => {
+        const sleddingBody = pair.bodyA.plugin.isSleddingGuy ? pair.bodyA : 
+                            pair.bodyB.plugin.isSleddingGuy ? pair.bodyB : null;
+        const platform = pair.bodyA.isStatic ? pair.bodyA : 
+                        pair.bodyB.isStatic ? pair.bodyB : null;
+        
+        if (sleddingBody && platform) {
+          // Changer la couleur du fond aléatoirement
+          const palette = colorPalettes[Math.floor(Math.random() * colorPalettes.length)];
+          if (backgroundRef.current) {
+            backgroundRef.current.style.background = `linear-gradient(135deg, ${palette[0]} 0%, ${palette[1]} 100%)`;
+          }
+          
+          // Ajuster la friction du bonhomme selon le type de plateforme
+          if (platform.plugin.platformKind === 'icy') {
+            // Aucune friction sur la glace
+            Body.set(sleddingBody, { friction: 0 });
+          } else {
+            // Très peu de friction sur les autres plateformes
+            Body.set(sleddingBody, { friction: 0.05 });
+          }
+          
+          // Effets spéciaux selon le type de plateforme
+          if (platform.plugin.platformKind === 'bouncy') {
+            // Super rebond sur les plateformes violettes - propulsion forte!
+            const currentVelY = sleddingBody.velocity.y;
+            // Si on tombe dessus (vitesse Y positive), propulser vers le haut
+            if (currentVelY > 2) {
+              Body.setVelocity(sleddingBody, {
+                x: sleddingBody.velocity.x * 1.1,
+                y: -Math.abs(currentVelY) * 1.8 - 5
+              });
+            } else {
+              // Sinon juste un boost
+              Body.setVelocity(sleddingBody, {
+                x: sleddingBody.velocity.x * 1.2,
+                y: sleddingBody.velocity.y * 1.5
+              });
+            }
+          } else if (platform.plugin.platformKind === 'icy') {
+            // Effet glissade sur les plateformes givrées
+            Body.setVelocity(sleddingBody, {
+              x: sleddingBody.velocity.x * 1.15,
+              y: sleddingBody.velocity.y
+            });
+          }
+        }
+      });
+    });
+    
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'q') keys.left = true;
       if (e.key === 'ArrowRight' || e.key === 'd') keys.right = true;
@@ -239,15 +340,7 @@ const SleddingChaos = ({ onClose }) => {
     Events.on(engine, 'beforeUpdate', () => {
       const sleddingPos = sleddingGuy.position;
       
-      // Contrôles horizontaux
-      if (keys.left) {
-        Body.applyForce(sleddingGuy, sleddingPos, { x: -0.002, y: 0 });
-      }
-      if (keys.right) {
-        Body.applyForce(sleddingGuy, sleddingPos, { x: 0.002, y: 0 });
-      }
-      
-      // Saut (vérifier collision avec n'importe quel body en dessous)
+      // Vérifier si au sol
       const isGrounded = engine.world.bodies.some(body => {
         if (body === sleddingGuy || !body.isStatic) return false;
         const below = body.position.y > sleddingPos.y;
@@ -256,8 +349,31 @@ const SleddingChaos = ({ onClose }) => {
         return below && close && aligned;
       });
       
+      // Contrôles horizontaux avec plus de force en l'air
+      const airControl = isGrounded ? 0.004 : 0.008;
+      if (keys.left) {
+        Body.applyForce(sleddingGuy, sleddingPos, { x: -airControl, y: 0 });
+        // Au sol, appliquer une légère rotation pour aider au déplacement
+        if (isGrounded) {
+          Body.setAngularVelocity(sleddingGuy, -0.05);
+        }
+      }
+      if (keys.right) {
+        Body.applyForce(sleddingGuy, sleddingPos, { x: airControl, y: 0 });
+        // Au sol, appliquer une légère rotation pour aider au déplacement
+        if (isGrounded) {
+          Body.setAngularVelocity(sleddingGuy, 0.05);
+        }
+      }
+      
+      // Ralentir la rotation naturellement quand aucune touche n'est pressée
+      if (!keys.left && !keys.right && isGrounded) {
+        Body.setAngularVelocity(sleddingGuy, sleddingGuy.angularVelocity * 0.9);
+      }
+      
+      // Saut
       if (keys.up && (isGrounded || Math.abs(sleddingGuy.velocity.y) < 1)) {
-        Body.setVelocity(sleddingGuy, { x: sleddingGuy.velocity.x, y: -12 });
+        Body.setVelocity(sleddingGuy, { x: sleddingGuy.velocity.x, y: -15 });
       }
       
       // Générer de nouvelles plateformes au fur et à mesure
@@ -290,8 +406,13 @@ const SleddingChaos = ({ onClose }) => {
         World.remove(engine.world, cvBodiesToRemove);
       }
       
-      // Vérifier si le bonhomme est tombé trop bas
-      if (sleddingPos.y > window.innerHeight + 500) {
+      // Vérifier si le bonhomme est tombé trop bas (par rapport aux plateformes)
+      const lowestPlatform = platforms.reduce((lowest, platform) => {
+        return Math.max(lowest, platform.position.y);
+      }, 0);
+      
+      // Game over si le bonhomme est 800px sous la plateforme la plus basse
+      if (sleddingPos.y > lowestPlatform + 800) {
         setGameOver(true);
         Runner.stop(runner);
         return;
@@ -312,6 +433,13 @@ const SleddingChaos = ({ onClose }) => {
       
       Render.lookAt(gameRender, bounds);
       Render.lookAt(cvRender, bounds);
+      
+      // Effet parallax sur les montagnes
+      const mountainLayers = document.querySelectorAll('.mountain-layer');
+      mountainLayers.forEach((layer, index) => {
+        const speed = 0.1 + (index * 0.05);
+        layer.style.transform = `translateX(${-smoothX * speed}px)`;
+      });
       
       // Mettre à jour la distance
       setDistance(Math.max(0, Math.floor(sleddingPos.x / 10)));
@@ -337,6 +465,8 @@ const SleddingChaos = ({ onClose }) => {
     Runner.run(runner, engine);
     Render.run(cvRender);
     Render.run(gameRender);
+    
+
 
     // Cleanup
     return () => {
@@ -363,6 +493,18 @@ const SleddingChaos = ({ onClose }) => {
 
   return (
     <div className="sledding-chaos-overlay">
+      <div 
+        ref={backgroundRef}
+        className="dynamic-background"
+        style={{
+          background: 'linear-gradient(135deg, #87CEEB 0%, #E0F6FF 100%)'
+        }}
+      />
+      <div className="mountains-container">
+        <div className="mountain-layer mountain-layer-1" />
+        <div className="mountain-layer mountain-layer-2" />
+        <div className="mountain-layer mountain-layer-3" />
+      </div>
       <button className="close-chaos" onClick={onClose}>✕</button>
       {!gameOver ? (
         <>
