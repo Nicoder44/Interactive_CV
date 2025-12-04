@@ -63,6 +63,43 @@
   color: var(--awesome-skyblue);
 }
 
+.sledding-trigger {
+  display: inline-block;
+  margin-left: 1rem;
+  background: transparent;
+  border: 2px solid transparent;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  vertical-align: middle;
+  animation: wiggle 3s ease-in-out infinite;
+}
+
+.sledding-trigger:hover {
+  background: rgba(3, 149, 222, 0.1);
+  border-color: var(--awesome-skyblue);
+  transform: scale(1.2) rotate(5deg);
+  animation: none;
+}
+
+.sledding-trigger:active {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+}
+
 .cv-title {
   font-size: 1.15rem;
   color: var(--graytext);
