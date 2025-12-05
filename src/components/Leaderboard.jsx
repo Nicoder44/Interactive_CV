@@ -8,6 +8,9 @@ const Leaderboard = ({ currentScore, onClose, onRestart }) => {
   const [country, setCountry] = useState('');
   const [showCountryInput, setShowCountryInput] = useState(false);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [allScores, setAllScores] = useState([]);
+  const [lastPlace, setLastPlace] = useState(null);
+  const [userRank, setUserRank] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -29,9 +32,9 @@ const Leaderboard = ({ currentScore, onClose, onRestart }) => {
   // Récupérer le leaderboard
   useEffect(() => {
     const scoresRef = ref(database, 'scores');
-    const topScoresQuery = query(scoresRef, orderByChild('distance'), limitToLast(100));
+    const allScoresQuery = query(scoresRef, orderByChild('distance'));
     
-    const unsubscribe = onValue(topScoresQuery, (snapshot) => {
+    const unsubscribe = onValue(allScoresQuery, (snapshot) => {
       const scores = [];
       snapshot.forEach((childSnapshot) => {
         scores.push({
@@ -40,17 +43,32 @@ const Leaderboard = ({ currentScore, onClose, onRestart }) => {
         });
       });
       
-      // Trier par distance décroissante et prendre les 10 premiers
-      const sortedScores = scores
-        .sort((a, b) => b.distance - a.distance)
-        .slice(0, 10);
+      // Trier par distance décroissante
+      const sortedScores = scores.sort((a, b) => b.distance - a.distance);
       
-      setLeaderboard(sortedScores);
+      // Stocker tous les scores
+      setAllScores(sortedScores);
+      
+      // Top 10 pour le leaderboard
+      setLeaderboard(sortedScores.slice(0, 10));
+      
+      // Dernier du classement
+      if (sortedScores.length > 0) {
+        setLastPlace({
+          ...sortedScores[sortedScores.length - 1],
+          rank: sortedScores.length
+        });
+      }
+      
+      // Calculer le rang du score actuel
+      const rank = sortedScores.filter(s => s.distance > currentScore).length + 1;
+      setUserRank(rank);
+      
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [currentScore]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -134,6 +152,9 @@ const Leaderboard = ({ currentScore, onClose, onRestart }) => {
         ) : (
           <div className="submitted-message">
             <p>✅ Score submitted successfully!</p>
+            {userRank && (
+              <p className="user-rank">🎯 Your rank: <strong>#{userRank}</strong> / {allScores.length}</p>
+            )}
           </div>
         )}
         
@@ -169,6 +190,19 @@ const Leaderboard = ({ currentScore, onClose, onRestart }) => {
                 ))}
               </tbody>
             </table>
+          )}
+          
+          {lastPlace && allScores.length > 10 && (
+            <div className="last-place-info">
+              <p className="separator">...</p>
+              <div className="last-place">
+                <span className="rank">#{lastPlace.rank}</span>
+                <span className="player">
+                  {lastPlace.country && getCountryFlag(lastPlace.country)} {lastPlace.pseudo.length > 15 ? lastPlace.pseudo.substring(0, 15) + '...' : lastPlace.pseudo}
+                </span>
+                <span className="distance">{lastPlace.distance}m</span>
+              </div>
+            </div>
           )}
         </div>
         
