@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
 import Leaderboard from './Leaderboard';
+import { activateAppCheck } from '../firebase';
 import './SleddingChaos.css';
 
 const SleddingChaos = ({ onClose }) => {
@@ -15,6 +16,9 @@ const SleddingChaos = ({ onClose }) => {
   const finalScoreRef = useRef(0); // Sceller le score final pour éviter la triche
 
   useEffect(() => {
+    // Activer App Check pour protéger Firebase (uniquement dans le jeu)
+    activateAppCheck();
+
     // Détecter si on est sur mobile
     const checkMobile = () => {
       setIsMobile('ontouchstart' in window || window.innerWidth < 768);

@@ -56,15 +56,9 @@ const Leaderboard = ({ currentScore, onClose, onRestart }) => {
     e.preventDefault();
     if (!pseudo.trim()) return;
 
-    // Validation côté client (sera aussi validé par Firebase)
-    if (currentScore < 0 || currentScore > 100000) {
-      alert('Invalid score detected. Please play fairly! 🛷');
-      return;
-    }
-
     const scoresRef = ref(database, 'scores');
     const newScore = {
-      pseudo: pseudo.trim().substring(0, 20), // Limiter à 20 caractères
+      pseudo: pseudo.trim().substring(0, 25), // Limiter à 25 caractères
       distance: Math.floor(currentScore), // Arrondir pour éviter les décimales suspectes
       country: showCountryInput ? '' : country,
       timestamp: Date.now()
@@ -113,7 +107,7 @@ const Leaderboard = ({ currentScore, onClose, onRestart }) => {
                   placeholder="Enter your name"
                   value={pseudo}
                   onChange={(e) => setPseudo(e.target.value)}
-                  maxLength={20}
+                  maxLength={25}
                   required
                   autoFocus
                 />
@@ -168,7 +162,7 @@ const Leaderboard = ({ currentScore, onClose, onRestart }) => {
                       {index > 2 && `#${index + 1}`}
                     </td>
                     <td className="player">
-                      {score.country && getCountryFlag(score.country)} {score.pseudo}
+                      {score.country && getCountryFlag(score.country)} {score.pseudo.length > 15 ? score.pseudo.substring(0, 15) + '...' : score.pseudo}
                     </td>
                     <td className="distance">{score.distance}m</td>
                   </tr>
